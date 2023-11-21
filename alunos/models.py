@@ -5,6 +5,7 @@ from django.core.files import File
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
+from django.utils import timezone 
 
 User = get_user_model()
 
@@ -13,9 +14,15 @@ class Aluno(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="alunos")
     nome = models.CharField(max_length=200)
     idade = models.IntegerField(default=0)
-    matricula = models.CharField(max_length=100)
+    matricula = models.CharField(max_length=100, unique=True, null=False)
     foto = models.ImageField(upload_to="foto-aluno")
-    created = models.DateTimeField(auto_now_add=True)
+
+    telefone_responsavel = models.CharField(max_length=20)
+    
+    horario_entrada = models.DateTimeField(blank=True, null=True)
+    horario_saida = models.DateTimeField( blank=True, null=True)
+
+    created = models.DateTimeField(default=timezone.now)
     
     qrcode = models.ImageField(upload_to="qrcode", blank=True, editable=False)
 

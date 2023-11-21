@@ -34,7 +34,9 @@ INSTALLED_APPS = [
     "alunos",
 
     "rest_framework",
-    "rest_framework.authtoken"
+    "rest_framework.authtoken",
+
+    'django_celery_beat'
 ]
 
 AUTH_USER_MODEL = "accounts.User"
@@ -120,6 +122,15 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+#celery config
+
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 
 # Internationalization
