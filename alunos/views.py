@@ -5,7 +5,7 @@ from rest_framework import status, generics, mixins, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 
-from datetime import datetime
+from datetime import datetime, timezone
 from django.shortcuts import get_object_or_404
 from .models import Aluno
 from .serializers import AlunoSerializer
@@ -43,7 +43,7 @@ class AlunoRetrieveUpdateDeleteView(
     def get(self, request: Request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
     
-    def post(self, request: Request, *args, **kwargs):
+    def put(self, request: Request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
     
     def delete(self, request: Request, *args, **kwargs):
@@ -80,26 +80,50 @@ class ListAlunosForUser(generics.GenericAPIView, mixins.ListModelMixin):
 @permission_classes([IsAuthenticated])
 def registrar_entrada_aluno(request: Request, pk):
     
-    if request.method == "POST":
-        aluno = get_object_or_404(Aluno, id=pk)
+    aluno = get_object_or_404(Aluno, id=pk)
 
-        aluno.horario_entrada = datetime.now()
-        aluno.save()
+    aluno.horario_entrada = datetime.now(timezone.utc)
+    aluno.save()
 
-        return Response(data={"message": "horario de entrada registrado com sucesso"}, status=status.HTTP_200_OK)
-    
-    return Response(data={"message": "ta errado o coiso"}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(data={"message": "horario de entrada registrado com sucesso"}, status=status.HTTP_200_OK)
+
 
 @api_view(http_method_names=["POST"])
 @permission_classes([IsAuthenticated])
 def registrar_saida_aluno(request: Request, pk):
     
-    if request.method == "POST":
-        aluno = get_object_or_404(Aluno, id=pk)
+    aluno = get_object_or_404(Aluno, id=pk)
 
-        aluno.horario_saida = datetime.now()
-        aluno.save()
+    aluno.horario_saida = datetime.now(timezone.utc)
+    aluno.save()
 
-        return Response(data={"message": "horario de saída registrado com sucesso"}, status=status.HTTP_200_OK)
+    return Response(data={"message": "horario de saída registrado com sucesso"}, status=status.HTTP_200_OK)
     
-    return Response(data={"message": "ta errado o coiso"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(http_method_names=["POST"])
+@permission_classes([IsAuthenticated])
+def liberar_aluno(request: Request, pk):
+    
+    aluno = get_object_or_404(Aluno, id=pk)
+
+    if not aluno.liberado:
+            
+        response = {
+            "message": "Aluno liberado com sucesso"
+        }
+            
+        aluno.liberado = True
+    else:
+
+        response = {
+            "message": "Aluno voltara a receber mensagens com sucesso"
+        }
+
+        aluno.liberado = False
+
+    aluno.save()
+
+    return Response(data=response, status=status.HTTP_200_OK)
+    
+

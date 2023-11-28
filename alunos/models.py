@@ -16,6 +16,8 @@ class Aluno(models.Model):
     idade = models.IntegerField(default=0)
     matricula = models.CharField(max_length=100, unique=True, null=False)
     foto = models.ImageField(upload_to="foto-aluno")
+    advertencias = models.IntegerField(default=0)
+    liberado = models.BooleanField(default=False)
 
     telefone_responsavel = models.CharField(max_length=20)
     
@@ -36,7 +38,7 @@ class Aluno(models.Model):
 def criar_qrcode(sender, instance, created, **kwargs):
     if created:
         
-        url = f"http://localhost:8000/aluno/{instance.id}"  
+        url = "http://localhost:8000/aluno/{instance.id}"  
 
         qr = qrcode.QRCode(
             version=1,
