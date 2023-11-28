@@ -3,16 +3,12 @@ from rest_framework import serializers
 from .models import Aluno
 
 class AlunoSerializer(serializers.ModelSerializer):
-    nome = serializers.CharField(required=True)
-    idade = serializers.IntegerField(required=True)
-    matricula = serializers.CharField(required=True)
-    foto = serializers.ImageField(required=True)
-    telefone_responsavel = serializers.CharField(max_length=20)
+    matricula = serializers.CharField(required=False)
 
     class Meta:
         model = Aluno
-        fields = ["id" ,"nome", 'qrcode',"idade", "matricula", "foto", "telefone_responsavel", "horario_entrada", "horario_saida"]
-        read_only_fields = ["id",'qrcode', "horario_entrada", "horario_saida"]
+        fields = ["id" ,"nome", 'qrcode',"idade", "matricula", "foto", "telefone_responsavel", "horario_entrada", "horario_saida", "advertencias", "liberado"]
+        read_only_fields = ["id",'qrcode', "horario_entrada", "horario_saida", "advertencias", "liberado"]
 
     def validate(self, attrs):
         matricula_exists = Aluno.objects.filter(matricula=attrs["matricula"]).exists()
