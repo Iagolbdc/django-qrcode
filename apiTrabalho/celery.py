@@ -12,7 +12,7 @@ app = Celery("apiTrabalho.celery")
 app.conf.beat_schedule = {
     'verificar-horarios': {
         'task': 'alunos.tasks.verificar_horarios',
-        'schedule': crontab(minute=5, hour=2),  
+        'schedule': crontab(minute=46, hour=19),  
     },
 }
 
