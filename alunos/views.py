@@ -1,9 +1,10 @@
+import time
 from rest_framework.request import Request
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework import status, generics, mixins, viewsets
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.pagination import PageNumberPagination
+#from rest_framework.pagination import PageNumberPagination
 
 from datetime import datetime, timezone
 from django.shortcuts import get_object_or_404
@@ -11,19 +12,21 @@ from .models import Aluno
 from .serializers import AlunoSerializer
 from .permissions import  AuthorOrReadOnly
 from accounts.serializers import CurrentUserAlunoSerializer
+from twilio.rest import Client
+from datetime import date
 
-class customPaginator(PageNumberPagination):
-    page_size = 20
-    page_query_param = "page"
-    page_size_query_param = "page_size"
+# class customPaginator(PageNumberPagination):
+#     page_size = 20
+#     page_query_param = "page"
+#     page_size_query_param = "page_size"
 
 
 class AlunoViewset(viewsets.ModelViewSet):
     queryset = Aluno.objects.all()
     serializer_class = AlunoSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    pagination_class = customPaginator
-
+#   pagination_class = customPaginator
+    
     def perform_create(self, serializer):
         user = self.request.user
         serializer.save(user = user)
@@ -125,5 +128,87 @@ def liberar_aluno(request: Request, pk):
     aluno.save()
 
     return Response(data=response, status=status.HTTP_200_OK)
+
+@api_view(http_method_names=["POST"])
+@permission_classes([IsAuthenticated])
+def verificar_horarios(request: Request):
+    alunos = Aluno.objects.all()
+    print("testando")
+    
+    for aluno in alunos:
+        
+        if not aluno.liberado:
+            
+            if aluno.horario_entrada or aluno.horario_saida:
+
+                horario_entrada = aluno.horario_entrada.time()
+                
+                if horario_entrada.hour > 8 and not aluno.horario_saida:
+                    
+                    mensagem = f"Olá! O aluno {aluno.nome} de matricula {aluno.matricula} na data {date.today()} registrou seu horário de entrada em {horario_entrada.strftime( '%H:%M:%S' )} e não registrou seu horário de saída. Por favor, esteja ciente sobre seu horário de entrada e saída."
+                    enviar_mensagem(aluno.telefone_responsavel, mensagem)
+                    
+                    aluno.horario_entrada = None
+                    aluno.horario_saida = None
+                    aluno.advertencias = aluno.advertencias + 1
+                    
+                    aluno.save()
+
+                    continue
+
+                if horario_entrada.hour > 8:
+                    
+                    mensagem = f"Olá! O aluno {aluno.nome} de matricula {aluno.matricula} na data {date.today()} registrou seu horário de entrada em {horario_entrada.strftime( '%H:%M:%S' )}. Por favor, esteja ciente do horário de entrada."
+                    enviar_mensagem(aluno.telefone_responsavel, mensagem)
+                    
+                    aluno.horario_entrada = None
+                    aluno.horario_saida = None
+                    aluno.advertencias = aluno.advertencias + 1
+
+                    aluno.save()
+                    
+                    continue
+
+                if not aluno.horario_saida:
+                    
+                    mensagem = f"Olá! O aluno {aluno.nome} de matricula {aluno.matricula} na data {date.today()} não registrou o horário de saida. Por favor, entre em contato com a coordenação para sabermos o motivo."
+                    enviar_mensagem(aluno.telefone_responsavel, mensagem)
+                    
+                    aluno.horario_saida = None
+                    aluno.horario_entrada = None
+                    aluno.advertencias = aluno.advertencias + 1
+
+                    aluno.save()
+                    
+                    continue
+
+            else:
+                
+                mensagem = f"Olá! O aluno {aluno.nome} de matricula {aluno.matricula} na data {date.today()} não teve seu horário de entrada e de saída registrados. Por favor, entre em contato com a direção."
+                enviar_mensagem(aluno.telefone_responsavel, mensagem)
+                
+                aluno.advertencias = aluno.advertencias + 1
+
+                aluno.save()
+    
+    return Response(data={"message": "Deu tudo certo dento"}, status=status.HTTP_200_OK)
+                
+
+def enviar_mensagem(numero, mensagem):
+    print("testando")
+    account_sid = 'AC1b3b2331efb73b7dfb2d40c18112521c'
+    auth_token = '4a2c014be3907f80c6e02251df582595'
+    from_whatsapp_number = 'whatsapp:+14155238886'
+
+    client = Client(account_sid, auth_token)
+    try:
+        message = client.messages.create(
+                             from_=from_whatsapp_number,
+                             body=mensagem,
+                             to=f"whatsapp:{numero}")
+        print(f'Mensagem enviada para {numero}: {mensagem}, {message.sid}')
+    except Exception as e:
+        print(f'Erro ao enviar mensagem para {numero}: {e}')
+
     
 
