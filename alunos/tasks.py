@@ -1,5 +1,7 @@
+# import sys
+# print(sys.path)
 from celery import shared_task
-from .models import Aluno
+from alunos.models import Aluno
 from datetime import date
 from twilio.rest import Client
 import time
@@ -70,8 +72,8 @@ def verificar_horarios():
 @shared_task
 def enviar_mensagem(numero, mensagem):
     print("testando")
-    account_sid = 'AC1b3b2331efb73b7dfb2d40c18112521c'
-    auth_token = '50da47634b30465820b17aa2dec79ae0'
+    account_sid = 'MY_SID'
+    auth_token = 'MY_AUTH_TOKEN'
     from_whatsapp_number = 'whatsapp:+14155238886'
 
     client = Client(account_sid, auth_token)

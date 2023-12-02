@@ -61,8 +61,8 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated"),
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 3
+#    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+#    "PAGE_SIZE": 3
 }
 
 SIMPLE_JWT = {
@@ -95,15 +95,22 @@ WSGI_APPLICATION = "apiTrabalho.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "banco_qrcode",
-        "HOST": "localhost",
-        "PORT": 3306,
-        "USER": "root",
-        "PASSWORD": "1234"
-    }
-}
+     "default": {
+         "ENGINE": "django.db.backends.mysql",
+         "NAME": "banco_qrcode",
+         "HOST": "localhost",
+         "PORT": 3306,
+         "USER": "root",
+         "PASSWORD": "1234"
+     }
+ }
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": "mydatabase",
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

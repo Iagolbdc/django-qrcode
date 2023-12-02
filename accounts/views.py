@@ -20,13 +20,13 @@ class SignUpView(generics.GenericAPIView):
             serializer.save()
 
             response = {
-                "message": "User created com sucesso yea",
+                "message": "success",
                 "data": serializer.data
             }
 
             return Response(data=response, status=status.HTTP_201_CREATED)
         
-        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={"message" : serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
     permission_classes = []
@@ -42,7 +42,7 @@ class LoginView(APIView):
             tokens = create_jwt_pair_for_user(user)
 
             response = {
-                "message": "login sucesso chamaaa",
+                "message": "success",
                 "tokens": tokens
             }
             

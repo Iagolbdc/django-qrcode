@@ -49,6 +49,7 @@ tomli==2.0.1
 twilio==8.10.2
 typing_extensions==4.8.0
 tzdata==2023.3
+tzlocal==5.2
 urllib3==2.1.0
 vine==5.1.0
 wcwidth==0.2.10
