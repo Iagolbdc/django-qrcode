@@ -1,1 +1,9 @@
 /env
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
+/alunos/__pychache__
+/alunos/migrations
+/apiTrabalho/__pychache__
+/accounts/__pychache__
+/accounts/migrations
