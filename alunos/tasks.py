@@ -72,8 +72,8 @@ def verificar_horarios():
 @shared_task
 def enviar_mensagem(numero, mensagem):
     print("testando")
-    account_sid = 'MY_SID'
-    auth_token = 'MY_AUTH_TOKEN'
+    account_sid = 'AC1b3b2331efb73b7dfb2d40c18112521c'
+    auth_token = 'd4c470bc40f17c0f6bafa41d9544f0c1'
     from_whatsapp_number = 'whatsapp:+14155238886'
 
     client = Client(account_sid, auth_token)
