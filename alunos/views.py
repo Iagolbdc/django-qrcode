@@ -196,8 +196,8 @@ def verificar_horarios(request: Request):
 
 def enviar_mensagem(numero, mensagem):
     print("testando")
-    account_sid = 'AC1b3b2331efb73b7dfb2d40c18112521c'
-    auth_token = '4a2c014be3907f80c6e02251df582595'
+    account_sid = 'MY_COISO'
+    auth_token = 'OUTRO COIUSO'
     from_whatsapp_number = 'whatsapp:+14155238886'
 
     client = Client(account_sid, auth_token)
