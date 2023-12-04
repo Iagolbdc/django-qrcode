@@ -38,7 +38,7 @@ class Aluno(models.Model):
 def criar_qrcode(sender, instance, created, **kwargs):
     if created:
         
-        url = "http://localhost:8000/aluno/{instance.id}"  
+        url = f"http://192.168.1.42:8000/aluno/{instance.id}"  
 
         qr = qrcode.QRCode(
             version=1,
