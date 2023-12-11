@@ -12,6 +12,7 @@ User = get_user_model()
 class Aluno(models.Model):
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="alunos")
+    url = models.CharField(max_length=50, null=True, blank=True)
     nome = models.CharField(max_length=200)
     idade = models.IntegerField(default=0)
     matricula = models.CharField(max_length=100, unique=True, null=False)
@@ -38,7 +39,7 @@ class Aluno(models.Model):
 def criar_qrcode(sender, instance, created, **kwargs):
     if created:
         
-        url = f"http://192.168.1.42:8000/aluno/{instance.id}"  
+        url = f"{instance.url}{instance.id}"  
 
         qr = qrcode.QRCode(
             version=1,
