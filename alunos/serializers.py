@@ -7,7 +7,7 @@ class AlunoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Aluno
-        fields = ["id" ,"nome", 'qrcode',"idade", "matricula", "foto", "telefone_responsavel", "horario_entrada", "horario_saida", "advertencias", "liberado"]
+        fields = ["id" ,"nome", 'qrcode',"idade", "matricula", "foto", "telefone_responsavel", "horario_entrada", "horario_saida", "advertencias", "liberado", "url"]
         read_only_fields = ["id",'qrcode', "horario_entrada", "horario_saida", "advertencias", "liberado"]
 
     def validate(self, attrs):
@@ -17,4 +17,10 @@ class AlunoSerializer(serializers.ModelSerializer):
             raise ValidationError("Matricula já foi utilizada")
         
         return super().validate(attrs)
+    
+class UpdateAlunoSerializer(serializers.ModelSerializer):
 
+     class Meta:
+        model = Aluno
+        fields = ["id" ,"nome", 'qrcode',"idade", "matricula", "foto", "telefone_responsavel", "horario_entrada", "horario_saida", "advertencias", "liberado", "url"]
+        read_only_fields = ["id",'qrcode', "horario_entrada", "horario_saida", "advertencias"]

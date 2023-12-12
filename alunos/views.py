@@ -1,4 +1,5 @@
 import time
+import csv
 from rest_framework.request import Request
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
@@ -9,7 +10,7 @@ from rest_framework.decorators import api_view, permission_classes
 from datetime import datetime, timezone
 from django.shortcuts import get_object_or_404
 from .models import Aluno
-from .serializers import AlunoSerializer
+from .serializers import AlunoSerializer, UpdateAlunoSerializer
 from .permissions import  AuthorOrReadOnly
 from accounts.serializers import CurrentUserAlunoSerializer
 from twilio.rest import Client
@@ -39,14 +40,14 @@ class AlunoRetrieveUpdateDeleteView(
         mixins.UpdateModelMixin, mixins.RetrieveModelMixin
     ):
 
-    serializer_class = AlunoSerializer
+    serializer_class = UpdateAlunoSerializer
     queryset = Aluno.objects.all()
-    permission_classes = [AuthorOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request: Request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
     
-    def put(self, request: Request, *args, **kwargs):
+    def patch(self, request: Request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
     
     def delete(self, request: Request, *args, **kwargs):
@@ -131,12 +132,52 @@ def liberar_aluno(request: Request, pk):
 
 @api_view(http_method_names=["POST"])
 @permission_classes([IsAuthenticated])
+def criar_alunos(request: Request):
+        try:
+            # Obtenha o arquivo CSV da requisição
+            file = request.FILES['file']
+
+            # Abra o arquivo CSV para leitura
+            reader = csv.reader(file.read().decode('utf-8').splitlines())
+
+            # Pule a linha de cabeçalho
+            next(reader)
+
+            # Crie uma lista de dicionários para armazenar os dados dos alunos
+            alunos_data = []
+
+            # Percorra cada linha do CSV
+            for row in reader:
+                # Crie um dicionário para os dados do aluno
+                aluno_data = {}
+
+                # Extraia os dados das colunas esperadas
+                for i, column in enumerate(['nome', 'matricula', 'idade', 'foto', 'telefone_responsavel']):
+                    if i < len(row):
+                        aluno_data[column] = row[i]
+
+                # Adicione o dicionário à lista
+                alunos_data.append(aluno_data)
+
+            # Crie os objetos Aluno em massa usando o serializer
+            serializer = AlunoSerializer(data=alunos_data, many=True)
+            if not serializer.is_valid():
+                return Response(data={"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
+
+            return Response(data={"status":"Alunos importados com sucesso!"}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(data={"Erro ao importar alunos": e}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(http_method_names=["POST"])
+@permission_classes([IsAuthenticated])
 def verificar_horarios(request: Request):
     alunos = Aluno.objects.all()
     print("testando")
     
     for aluno in alunos:
-        
+        time.sleep(3)
         if not aluno.liberado:
             
             if aluno.horario_entrada or aluno.horario_saida:
@@ -190,14 +231,23 @@ def verificar_horarios(request: Request):
                 aluno.advertencias = aluno.advertencias + 1
 
                 aluno.save()
+            
+        aluno.horario_saida = None
+        aluno.horario_entrada = None
+        aluno.save()
     
     return Response(data={"message": "Deu tudo certo dento"}, status=status.HTTP_200_OK)
                 
 
 def enviar_mensagem(numero, mensagem):
     print("testando")
+
+  
+
+
     account_sid = 'MY_COISO'
     auth_token = 'OUTRO COIUSO'
+
     from_whatsapp_number = 'whatsapp:+14155238886'
 
     client = Client(account_sid, auth_token)
