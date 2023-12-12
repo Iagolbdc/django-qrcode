@@ -57,8 +57,19 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
+    "https://3e26-45-4-62-22.ngrok-free.app"
     # Adicione outros domínios, se necessário
 ]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    "ngrok-skip-browser-warning" ]
+
 
 # CORS_ALLOWED_ORIGINS = [
 #     "https://example.com",

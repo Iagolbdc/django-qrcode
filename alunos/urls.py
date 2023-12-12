@@ -13,4 +13,5 @@ urlpatterns = [
     path("<int:pk>/saida_aluno/", views.registrar_saida_aluno, name="registrar_saida_aluno"),
     path("<int:pk>/liberar_aluno/", views.liberar_aluno, name="liberar_aluno"),
     path("verificar_horarios/", views.verificar_horarios, name="verificar_horarios"),
+    path('importar_csv/', views.criar_alunos, name='importar_csv'),
 ]
